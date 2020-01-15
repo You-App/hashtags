@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Hashtags</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#000000">
+<link rel="shortcut icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/firework-burst-icon-v2.png">
+<link rel="icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/firework-burst-icon-v2.png">
+<link rel="apple-touch-icon-precomposed" href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/firework-burst-icon-v2.png">
+<meta name="msapplication-TileColor" content="#000000">
+<meta name="msapplication-TileImage" content="https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/firework-burst-icon-v2.png">
+<link href="https://fonts.googleapis.com/css?family=Russo+One" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+<link rel="stylesheet" href="./style.css">
+
+    <style>
+body{ 
+background: #aa00ff;
+}
+.loading {
+  -webkit-animation: rotating 2s linear infinite;
+  -moz-animation: rotating 2s linear infinite;
+  -ms-animation: rotating 2s linear infinite;
+  -o-animation: rotating 2s linear infinite;
+  animation: rotating 2s linear infinite;
+}
+    </style>
+
+<!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+<script src='https://unpkg.com/infinite-scroll@3/dist/infinite-scroll.pkgd.min.js'></script>
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!-- YOUR CUSTOM MARKUP -->
+
+<script type="text/javascript">
+(function(){
+  var pageInfo,
+      baseUrl;
+  //
+  function search(keyword, nextPage) {
+      loadMore.style.display = 'none';
+      previewMask.style.display = 'none';
+      loadingMask.style.display = 'flex';
+      keyword = encodeURI(keyword);
+      baseUrl = 'https://www.instagram.com/explore/tags/'+keyword+'/?__a=1';
+      if(nextPage && pageInfo) {
+        baseUrl += '&max_id=' + pageInfo.end_cursor;
+      } else {
+        result.innerHTML = "";
+      }
+      $.get(baseUrl, function(resp){ 
+        pageInfo = resp.graphql.hashtag.edge_hashtag_to_media['page_info'];
+        var count = resp.graphql.hashtag.edge_hashtag_to_media['count'],
+            edges = resp.graphql.hashtag.edge_hashtag_to_media['edges'];
+        
+        for(obj in edges) {
+          var div = document.createElement('div');
+          var img = document.createElement('img');
+          var node = edges[obj].node;
+          img.src = node.display_url;
+          img.style.width = '380px';
+          div.appendChild(img);
+          div.style.display = 'inline-block';
+          div.style.padding = '0px';
+          div.margin = 'auto';
+          result.appendChild(div);
+        }
+        //
+        window.scrollTo(0,document.body.scrollHeight);
+        loadingMask.style.display = 'none';
+        loadMore.style.display = pageInfo.has_next_page ? 'block' : 'none';
+      });
+  }
+  // UI
+  var searchForm = document.createElement('div'),
+      input = document.createElement('input'),
+      result = document.createElement('div'),
+      loadMore = document.createElement('div'),
+      loadingMask = document.createElement('div'),
+      loading = document.createElement('div'),
+      previewMask = document.createElement('div'),
+      preview = document.createElement('img');
+  
+  result.style.paddingTop = '40px';
+  result.addEventListener('click', function(e){
+    if (e.srcElement.nodeName === "IMG") {
+      previewMask.style.display = 'flex';
+      preview.src = e.srcElement.src;
+    }
+  });
+  
+  preview.style.width = '90%';
+  preview.style.margin = 'auto';
+  
+  previewMask.style.position = 'fixed';
+  previewMask.style.display = 'none';
+  previewMask.style.height = '100vh';
+  previewMask.style.width = '100vw';
+  previewMask.style.background = '#ccc8';
+  previewMask.appendChild(preview);
+  previewMask.addEventListener('click', function(){
+    previewMask.style.display = 'none';
+  });
+  loading.style.display = 'inline-block';
+  loading.style.width = '10px';
+  loading.style.height = '10px';
+  loading.style.background = 'blue';
+  loading.style.margin = 'auto';
+  loading.className = 'loading';
+  
+  loadingMask.style.position = 'fixed';
+  loadingMask.style.display = 'none';
+  loadingMask.style.height = '100vh';
+  loadingMask.style.width = '100vw';
+  loadingMask.style.background = '#ccc8';
+  loadingMask.appendChild(loading);
+  loadMore.textContent = ' [ ↓ ] More More More [ ↓ ] ';
+  loadMore.style.display = 'none';
+  loadMore.style.textAlign = 'center';
+  loadMore.style.background = 'Aqua';
+  loadMore.style.lineHeight = '2.5';
+  loadMore.style.cursor = 'pointer';
+  loadMore.addEventListener('click', function(){
+    search(input.value, true);
+  });
+  
+  input.placeholder = 'input keywords';
+  input.style.height = '25px';
+  input.style.width = '95%';
+  input.style.lineHeight = '2';
+  input.style.fontSize = '20px';
+  input.addEventListener('keyup', function(e){
+    if(e.keyCode === 13) {
+      if(input.value.length < 2) {
+        alert('Please enter at least 2 characters');
+      } else {
+        search(input.value);
+      }  
+    }
+  });
+  searchForm.style.display = 'block';
+  searchForm.style.position = 'fixed';
+  searchForm.style.top = '50px';
+  searchForm.style.padding = '5px';
+  searchForm.style.width = '92%';
+  searchForm.style.textAlign = 'center';
+  searchForm.appendChild(input);
+  
+  document.body.appendChild(loadingMask);
+  document.body.appendChild(previewMask);
+  document.body.appendChild(searchForm);
+  document.body.appendChild(result);
+  document.body.appendChild(loadMore);
+  
+  // init
+  input.value = 'gachalife';
+  search(input.value);
+})()
+</script>
+
+
+<!-- FIREWORK APP MARKUP -->
+<div class="fireworks-container">
+	<div class="loading-init">
+<!-- 		<div class="loading-init__header">Loading</div> -->
+<!-- 		<div class="loading-init__status">Assembling Shells</div> -->
+	</div>
+	<div class="stage-container remove">
+		<div class="canvas-container">
+			<canvas id="trails-canvas"></canvas>
+			<canvas id="main-canvas"></canvas>
+		</div>
+		<div class="controls">
+			<div class="btn pause-btn">
+				<svg fill="white" width="24" height="24"><use href="#icon-pause" xlink:href="#icon-pause"></use></svg>
+			</div>
+			<div class="btn sound-btn">
+				<svg fill="white" width="24" height="24"><use href="#icon-sound-off" xlink:href="#icon-sound-off"></use></svg>
+			</div>
+			<div class="btn settings-btn">
+				<svg fill="white" width="24" height="24"><use href="#icon-settings" xlink:href="#icon-settings"></use></svg>
+			</div>
+		</div>
+		<div class="menu hide">
+			<div class="menu__inner-wrap">
+				<div class="btn btn--bright close-menu-btn">
+					<svg fill="white" width="24" height="24"><use href="#icon-close" xlink:href="#icon-close"></use></svg>
+				</div>
+				<div class="menu__header">Settings</div>
+				<div class="menu__subheader">For more info, click any label.</div>
+				<form>
+					<div class="form-option form-option--select">
+						<label class="shell-type-label">Shell Type</label>
+						<select class="shell-type"></select>
+					</div>
+					<div class="form-option form-option--select">
+						<label class="shell-size-label">Shell Size</label>
+						<select class="shell-size"></select>
+					</div>
+					<div class="form-option form-option--select">
+						<label class="quality-ui-label">Quality</label>
+						<select class="quality-ui"></select>
+					</div>
+					<div class="form-option form-option--select">
+						<label class="sky-lighting-label">Sky Lighting</label>
+						<select class="sky-lighting"></select>
+					</div>
+					<div class="form-option form-option--select">
+						<label class="scaleFactor-label">Scale</label>
+						<select class="scaleFactor"></select>
+					</div>
+					<div class="form-option form-option--checkbox">
+						<label class="auto-launch-label">Auto Fire</label>
+						<input class="auto-launch" type="checkbox" />
+					</div>
+					<div class="form-option form-option--checkbox form-option--finale-mode">
+						<label class="finale-mode-label">Finale Mode</label>
+						<input class="finale-mode" type="checkbox" />
+					</div>
+					<div class="form-option form-option--checkbox">
+						<label class="hide-controls-label">Hide Controls</label>
+						<input class="hide-controls" type="checkbox" />
+					</div>
+					<div class="form-option form-option--checkbox form-option--fullscreen">
+						<label class="fullscreen-label">Fullscreen</label>
+						<input class="fullscreen" type="checkbox" />
+					</div>
+					<div class="form-option form-option--checkbox">
+						<label class="long-exposure-label">Open Shutter</label>
+						<input class="long-exposure" type="checkbox" />
+					</div>
+				</form>
+				<div class="credits">
+					Passionately built by <a href="https://cmiller.tech/" target="_blank">Caleb Miller</a>.
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="help-modal">
+		<div class="help-modal__overlay"></div>
+		<div class="help-modal__dialog">
+			<div class="help-modal__header"></div>
+			<div class="help-modal__body"></div>
+			<button type="button" class="help-modal__close-btn">Close</button>
+		</div>
+	</div>
+</div>
+<!-- partial -->
+  <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/fscreen%401.0.1.js'></script>
+<script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/Stage%400.1.4.js'></script>
+<script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/MyMath.js'></script><script  src="./script.js"></script>
+
+</body>
+</html>
