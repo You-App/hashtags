@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#9fa8da">
 <link rel="shortcut icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/firework-burst-icon-v2.png">
 <link rel="icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/firework-burst-icon-v2.png">
 <link rel="apple-touch-icon-precomposed" href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/firework-burst-icon-v2.png">
@@ -14,19 +14,6 @@
 <meta name="msapplication-TileImage" content="https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/firework-burst-icon-v2.png">
 <link href="https://fonts.googleapis.com/css?family=Russo+One" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
 <link rel="stylesheet" href="./style.css">
-
-    <style>
-body{ 
-background: #9fa8da;
-}
-.loading {
-  -webkit-animation: rotating 2s linear infinite;
-  -moz-animation: rotating 2s linear infinite;
-  -ms-animation: rotating 2s linear infinite;
-  -o-animation: rotating 2s linear infinite;
-  animation: rotating 2s linear infinite;
-}
-    </style>
 
 <!-- partial -->
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
@@ -86,7 +73,7 @@ background: #9fa8da;
       previewMask = document.createElement('div'),
       preview = document.createElement('img');
   
-  result.style.paddingTop = '40px';
+  result.style.paddingTop = '50px';
   result.addEventListener('click', function(e){
     if (e.srcElement.nodeName === "IMG") {
       previewMask.style.display = 'flex';
@@ -145,7 +132,7 @@ background: #9fa8da;
   });
   searchForm.style.display = 'block';
   searchForm.style.position = 'fixed';
-  searchForm.style.top = '50px';
+  searchForm.style.top = '20px';
   searchForm.style.padding = '5px';
   searchForm.style.width = '92%';
   searchForm.style.textAlign = 'center';
